@@ -8,7 +8,7 @@ github = oauth.register('github')
 
 
 async def login(request):
-    redirect_uri = request.url_for('auth')
+    redirect_uri = request.url_for('github/auth')
     return await oauth.github.authorize_redirect(request, redirect_uri)
 
 
