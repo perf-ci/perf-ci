@@ -21,6 +21,5 @@ async def auth(request):
     token = await oauth.github.authorize_access_token(request)
     user = await oauth.github.parse_id_token(request, token)
 
-    request.session['user'] = dict(user)
     # return RedirectResponse(url='/')
-    return JSONResponse(request.session['user'])
+    return JSONResponse(dict(user))
