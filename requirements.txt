@@ -1,3 +1,5 @@
 starlette
 authlib
 uvicorn
+httpx
+itsdangerous
