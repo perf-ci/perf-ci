@@ -13,6 +13,7 @@ from api.auth.github import login, auth
 
 config = Config(".env")
 
+
 async def homepage(request):
     return JSONResponse({'Hell': 'world'})
 
