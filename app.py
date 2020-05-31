@@ -19,8 +19,8 @@ async def homepage(request):
 
 app = Starlette(debug=True, routes=[
     Route('/', homepage),
-    Route('/github/login', login),
-    Route('/github/auth', auth),
+    Route('/github/login', login, name='github_login'),
+    Route('/github/auth', auth, name='github_auth')
 ], middleware=[
     Middleware(SessionMiddleware, secret_key=config('SECRET_KEY', cast=Secret))
 ])
