@@ -3,3 +3,4 @@ authlib
 uvicorn
 httpx
 itsdangerous
+aiofiles
