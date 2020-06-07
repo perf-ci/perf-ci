@@ -1,11 +1,13 @@
-from flask import Flask, render_template, url_for, redirect, session
 from authlib.integrations.flask_client import OAuth
-from requests import Response
+from flask import Flask, render_template, url_for, redirect, session, abort
+from flask_cors import CORS
 from flask_sslify import SSLify
 
 app = Flask(__name__, static_url_path='/', static_folder='frontend/build', template_folder='frontend/build')
 app.config.from_pyfile('app.config')
 sslify = SSLify(app)
+
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route('/')
 def homepage():
@@ -28,8 +30,23 @@ def login():
 @app.route('/authorize')
 def auth():
     token = oauth.github.authorize_access_token()
-    user :Response = oauth.github.get('user', token=token)
+    user = oauth.github.get('user', token=token)
     session['user'] = user.json()
     session.modified = True
 
     return redirect('/')
+
+
+@app.route('/api/logout')
+def logout():
+    del session['user']
+    return ''
+
+
+@app.route('/api/user')
+def user():
+    try:
+        user = session['user']
+    except KeyError:
+        abort(401)
+    return user

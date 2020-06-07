@@ -3,3 +3,4 @@ authlib
 requests
 Flask-SSLify
 pyopenssl
+flask_cors
