@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build: .
-    command: python app.py
+    command: FLASK_APP=app.py flask run --host=0.0.0.0 --port=8000  --cert=adhoc
     ports:
       - "8000:8000"
     volumes:

@@ -3,6 +3,7 @@ import './App.css';
 import Routes from './Routes';
 import HttpsRedirect from 'react-https-redirect';
 import {AuthenticationService} from './services/AuthenticationService';
+import MainMenu from './components/MainMenu';
 
 // eslint-disable-next-line require-jsdoc
 
@@ -32,7 +33,7 @@ class App extends React.Component {
   render() {
     return (
       <HttpsRedirect>
-        <div>Blbalba</div>
+        <MainMenu services={this.services}/>
         <Routes services={this.services}/>
       </HttpsRedirect>
     );

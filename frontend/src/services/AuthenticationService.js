@@ -29,7 +29,7 @@ export function AuthenticationService() {
     async login() {
       this.logout();
 
-      await backendAPI.post('/github/login', {})
+      await backendAPI.get('/github/login', {})
           .then((resp) => {
             console.log(resp.data);
             // _user = {username: username, refresh_token: resp.data.refresh};

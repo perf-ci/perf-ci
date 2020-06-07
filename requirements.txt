@@ -1,6 +1,5 @@
-starlette
+flask
 authlib
-uvicorn
-httpx
-itsdangerous
-aiofiles
+requests
+Flask-SSLify
+pyopenssl

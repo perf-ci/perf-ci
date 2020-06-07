@@ -1,33 +1,35 @@
-import os
+from flask import Flask, render_template, url_for, redirect, session
+from authlib.integrations.flask_client import OAuth
+from requests import Response
+from flask_sslify import SSLify
 
-from starlette.applications import Starlette
-from starlette.config import Config
-from starlette.datastructures import Secret
-from starlette.middleware import Middleware
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import FileResponse
-from starlette.routing import Route, Mount
-import uvicorn
-from starlette.staticfiles import StaticFiles
+app = Flask(__name__, static_url_path='/', static_folder='frontend/build', template_folder='frontend/build')
+app.config.from_pyfile('app.config')
+sslify = SSLify(app)
 
-from api.auth.github import login, auth
-
-config = Config(".env")
+@app.route('/')
+def homepage():
+    return render_template('index.html')
 
 
-async def homepage(request):
-    return FileResponse('frontend/build/index.html')
+oauth = OAuth(app)
+github = oauth.register('github',
+                        client_kwargs={'scope': 'openid profile email user'}
+                        )
 
 
-app = Starlette(debug=True, routes=[
-    Route('/', homepage),
-    Route('/github/login', login, name='github_login'),
-    Route('/github/auth', auth, name='github_auth'),
-    Mount('/static', app=StaticFiles(directory='frontend/build/static'), name="static")
-], middleware=[
-    Middleware(SessionMiddleware, secret_key=config('SECRET_KEY', cast=Secret))
-])
+@app.route('/login')
+def login():
+    redirect_uri = url_for('auth', _external=True)
+    app.logger.info(f'Redirect URI {redirect_uri}')
+    return oauth.github.authorize_redirect(redirect_uri)
 
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 8000))
-    uvicorn.run(app, host='0.0.0.0', port=port)
+
+@app.route('/authorize')
+def auth():
+    token = oauth.github.authorize_access_token()
+    user :Response = oauth.github.get('user', token=token)
+    session['user'] = user.json()
+    session.modified = True
+
+    return redirect('/')
