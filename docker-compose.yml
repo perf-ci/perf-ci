@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   web:
     build: .
     command: FLASK_APP=app.py flask run --host=0.0.0.0 --port=8000  --cert=adhoc
@@ -7,3 +8,10 @@ services:
       - "8000:8000"
     volumes:
       - ./:/usr/src
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data

@@ -4,3 +4,5 @@ requests
 Flask-SSLify
 pyopenssl
 flask_cors
+Flask-SQLAlchemy
+SQLAlchemy

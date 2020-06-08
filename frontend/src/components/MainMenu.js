@@ -37,7 +37,7 @@ export default class MainMenu extends Component {
         {this.state.user !== null ?
           <Menu.Menu position='right'>
             <Menu.Item>
-              {this.state.user.login}
+              {this.state.user.name}
             </Menu.Item>
             <Menu.Item>
               <Button onClick={this.handleLogout}>Logout</Button>

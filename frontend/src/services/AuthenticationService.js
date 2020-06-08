@@ -24,7 +24,7 @@ export function AuthenticationService() {
     },
 
     get username() {
-      return this.isAuthenticated ? _user.login : null;
+      return this.isAuthenticated ? _user.name : null;
     },
 
     logout() {
