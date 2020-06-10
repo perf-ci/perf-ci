@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 
@@ -16,12 +18,14 @@ class Project(Base):
 
     UniqueConstraint('user_id', 'name', name='uix_1')
 
-    def __init__(self, name=None, email=None):
+    def __init__(self, user_id=None, name=None):
+        self.user_id = user_id
         self.name = name
-        self.email = email
+        self.api_token = str(uuid.uuid4())
 
     def __repr__(self):
         return '<Project %r>' % self.name
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+

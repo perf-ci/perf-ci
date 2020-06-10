@@ -23,12 +23,12 @@ export function AuthenticationService() {
       return _user != null;
     },
 
-    get username() {
-      return this.isAuthenticated ? _user.name : null;
+    get user() {
+      return _user;
     },
 
-    logout() {
-      backendAPI.get('/api/logout').finally(() => {
+    async logout() {
+      await backendAPI.get('/api/logout').finally(() => {
         _user = null;
         _listener(_user);
       });

@@ -7,6 +7,6 @@ export default function PrivateRoute({component: Component, services, ...rest}) 
     // eslint-disable-next-line react/prop-types
     services.services.authenticationService.isAuthenticated ?
       <Component {...props} {...services} /> :
-      <Redirect to='/login'/>
+      <Redirect to='/'/>
   )}/>);
 }

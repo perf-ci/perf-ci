@@ -1,9 +1,11 @@
 from typing import List
 
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, render_template, url_for, redirect, session, abort, jsonify
+from flask import Flask, render_template, url_for, redirect, session, abort, jsonify, request
 from flask_cors import CORS
 from flask_sslify import SSLify
+from sqlalchemy.exc import DBAPIError, IntegrityError
+
 from database import db_session, init_db
 from models import User, Project
 
@@ -30,6 +32,9 @@ def homepage():
 def shutdown_session(exception=None):
     db_session.remove()
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('homepage'))
 
 @app.route('/login')
 def login():
@@ -85,4 +90,22 @@ def user(current_user):
 @authorized
 def get_projects(current_user):
     projects = Project.query.filter_by(user_id=current_user['id'])
-    return jsonify([project.as_dict() for project in projects])
+    response = jsonify([project.as_dict() for project in projects])
+    app.logger.debug(f'Send JSON data {response.json}')
+    return response
+
+
+@app.route('/api/projects/new', methods=['POST'])
+@authorized
+def create_project(current_user):
+    project_data = request.json
+    app.logger.debug(f'Receive JSON data {project_data}')
+
+    project_name = project_data['name']
+    try:
+        db_project = Project(user_id=current_user['id'], name=project_name)
+        db_session.add(db_project)
+        db_session.commit()
+        return None, 200
+    except IntegrityError as err:
+        return jsonify(message=f'A project with name {project_name} already exists'), 400
