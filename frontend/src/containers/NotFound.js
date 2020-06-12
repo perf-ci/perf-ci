@@ -1,6 +1,7 @@
-import React from "react";
-import "./NotFound.css";
+import React from 'react';
+import './NotFound.css';
 
+// eslint-disable-next-line require-jsdoc
 export default function NotFound() {
   return (
     <div className="NotFound">

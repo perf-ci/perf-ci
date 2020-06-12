@@ -1,9 +1,11 @@
 import React from 'react';
+import './Dashboard.css';
 import {Component} from 'react';
-import {Button, Menu} from 'semantic-ui-react';
+import {Menu} from 'semantic-ui-react';
 import Roller from '../components/Roller.js';
-import FlashMessage from '../components/FlashMessage';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import AddProjectForm from './Project/AddProjectForm';
+
 
 // eslint-disable-next-line require-jsdoc
 export default class MainMenu extends Component {
@@ -51,23 +53,9 @@ export default class MainMenu extends Component {
   // eslint-disable-next-line require-jsdoc
   render() {
     return (
-      <Grid>
-        <Grid.Row>
-          <Grid.Column width={3}> <Menu vertical>
-            {this.state.projects !== null ?
-              this.renderProjectList() : <Roller/>}
-            <Menu.Item>
-              <Button onClick={this.addProject}>Add Project</Button>
-            </Menu.Item>
-          </Menu>
-          </Grid.Column>
-          <Grid.Column width={9}>
-            {/* eslint-disable-next-line react/prop-types */}
-            <FlashMessage services={this.props.services}/>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <div className="Dashboard">
 
+      </div>
     );
   }
 }

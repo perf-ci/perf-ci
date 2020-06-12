@@ -32,9 +32,11 @@ def homepage():
 def shutdown_session(exception=None):
     db_session.remove()
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('homepage'))
+
 
 @app.route('/login')
 def login():
@@ -106,6 +108,10 @@ def create_project(current_user):
         db_project = Project(user_id=current_user['id'], name=project_name)
         db_session.add(db_project)
         db_session.commit()
-        return None, 200
+        return jsonify(
+            id = db_project.id,
+            message=f'Project with name "{project_name}" has been created'
+        ), 200
+
     except IntegrityError as err:
-        return jsonify(message=f'A project with name {project_name} already exists'), 400
+        return jsonify(message=f'A project with name "{project_name}" already exists'), 400

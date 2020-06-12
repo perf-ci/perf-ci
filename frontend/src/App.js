@@ -6,7 +6,25 @@ import {withRouter} from 'react-router-dom';
 import {AuthenticationService} from './services/AuthenticationService';
 import {ProjectService} from './services/ProjectService';
 import {NotificationService} from './services/NotificationService';
-import {Button, Menu} from 'semantic-ui-react';
+import {Button, Menu, Container} from 'semantic-ui-react';
+import FlashMessage from './components/FlashMessage';
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import ProjectPanel from './containers/Project/ProjectPanel';
+import AddProjectForm from './containers/Project/AddProjectForm';
+import PropTypes from 'prop-types';
+
+
+App.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  services: {
+    authenticationService: PropTypes.instanceOf(AuthenticationService),
+    projectService: PropTypes.instanceOf(ProjectService),
+    notificationService: PropTypes.instanceOf(NotificationService),
+  },
+};
+
 
 // eslint-disable-next-line require-jsdoc
 
@@ -88,7 +106,28 @@ class App extends React.Component {
             </Menu.Menu>
           }
         </Menu>
-        <Routes services={this.services}/>
+        <Container className="App">
+          <Grid>
+            <Grid.Row>
+              <Grid.Column width={4}>
+                {this.state.user !== null ?
+                <Menu vertical>
+                  <ProjectPanel services={this.services}/>
+                  <Menu.Item>
+                    <AddProjectForm services={this.services}/>
+                  </Menu.Item>
+                </Menu> :
+                <div/>
+                }
+
+              </Grid.Column>
+              <Grid.Column width={8}>
+                <FlashMessage services={this.services}/>
+                <Routes services={this.services}/>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
       </HttpsRedirect>
     );
   }
