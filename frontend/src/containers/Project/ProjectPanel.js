@@ -1,5 +1,6 @@
 import React from 'react';
 import {Component} from 'react';
+import {Link, withRouter} from 'react-router-dom';
 import {Menu} from 'semantic-ui-react';
 import Roller from '../../components/Roller.js';
 import PropTypes from 'prop-types';
@@ -17,27 +18,38 @@ ProjectPanel.propTypes = {
 
 
 // eslint-disable-next-line require-jsdoc
-export default class ProjectPanel extends Component {
+class ProjectPanel extends Component {
   // eslint-disable-next-line require-jsdoc
   constructor(props) {
     super(props);
 
-    props.services.projectService.list()
+    this.handleProjectClick = (id) => {
+      props.history.push(`/projects/?id=${id}`);
+    };
+
+
+    this.updateProjectList = () => props.services.projectService.list()
         .then((data) => {
           this.setState({
             projects: data,
           });
         });
 
+    props.services.projectService.onChanged(this.updateProjectList);
+    this.updateProjectList();
+
     this.state = {
       projects: null,
     };
+
 
     this.renderProjectList = () => {
       const projects = [];
       this.state.projects.forEach((proj) => {
         projects.push(
-            <Menu.Item> {proj.name} </Menu.Item>,
+            <Menu.Item onClick={(e) => this.handleProjectClick(proj.id)}>
+              {proj.name}
+            </Menu.Item>,
         );
       });
 
@@ -55,3 +67,5 @@ export default class ProjectPanel extends Component {
     );
   }
 }
+
+export default withRouter(ProjectPanel);

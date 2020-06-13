@@ -34,7 +34,7 @@ class AddProjectForm extends Component {
           .then((data) => {
             this.props.services.notificationService
                 .notifySuccess(data['message']);
-            this.props.history.push(`/projects/${data['id']}`);
+            this.props.history.push(`/projects/?id=${data['id']}`);
           })
           .catch((data) => {
             props.services.notificationService.notifyError(data['message']);

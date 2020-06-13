@@ -106,28 +106,27 @@ class App extends React.Component {
             </Menu.Menu>
           }
         </Menu>
-        <Container className="App">
-          <Grid>
-            <Grid.Row>
-              <Grid.Column width={4}>
-                {this.state.user !== null ?
+        <Grid>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              {this.state.user !== null ?
                 <Menu vertical>
+                  <Menu.Item><b>Projects</b></Menu.Item>
                   <ProjectPanel services={this.services}/>
                   <Menu.Item>
                     <AddProjectForm services={this.services}/>
                   </Menu.Item>
                 </Menu> :
                 <div/>
-                }
+              }
 
-              </Grid.Column>
-              <Grid.Column width={8}>
-                <FlashMessage services={this.services}/>
-                <Routes services={this.services}/>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </Container>
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <FlashMessage services={this.services}/>
+              <Routes services={this.services}/>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </HttpsRedirect>
     );
   }

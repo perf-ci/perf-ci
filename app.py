@@ -1,5 +1,5 @@
 from typing import List
-
+from functools import wraps
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, render_template, url_for, redirect, session, abort, jsonify, request
 from flask_cors import CORS
@@ -64,16 +64,16 @@ def auth():
     return redirect('/')
 
 
-def authorized(func):
-    def wrapper():
+def authorized(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
         try:
             current_user = session['user']
-            return func(current_user)
+            return f(current_user, *args, **kwargs)
         except KeyError:
             abort(401)
 
-    wrapper.__name__ = func.__name__  # trick flask's checks
-    return wrapper
+    return decorated_function
 
 
 @app.route('/api/logout')
@@ -109,9 +109,40 @@ def create_project(current_user):
         db_session.add(db_project)
         db_session.commit()
         return jsonify(
-            id = db_project.id,
+            id=db_project.id,
             message=f'Project with name "{project_name}" has been created'
         ), 200
 
     except IntegrityError as err:
         return jsonify(message=f'A project with name "{project_name}" already exists'), 400
+
+
+@app.route('/api/projects/<project_id>', methods=['GET'])
+@authorized
+def get_project(current_user, project_id):
+    db_project = Project.query.filter_by(user_id=current_user['id'], id=project_id).one_or_none()
+    if db_project:
+        project = db_project
+        json_data = project.as_dict()
+        return jsonify(json_data), 200
+    else:
+        return jsonify(
+            message=f'Failed to find a project with id {project_id}'
+        ), 400
+
+
+@app.route('/api/projects/<project_id>', methods=['DELETE'])
+@authorized
+def delete_project(current_user, project_id):
+    db_project = Project.query.filter_by(user_id=current_user['id'], id=project_id).one_or_none()
+    if db_project:
+        db_project.delete()
+        db_session.commit()
+        return jsonify(
+            id=db_project.id,
+            message=f'Project with name "{db_project.name}" has been removed'
+        ), 200
+    else:
+        return jsonify(
+            message=f'Failed to find a project with id {db_project.name}'
+        ), 400

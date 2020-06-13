@@ -3,6 +3,7 @@ import {Route, Switch} from 'react-router-dom';
 import PublicHome from './containers/PublicHome';
 import NotFound from './containers/NotFound';
 import Dashboard from './containers/Dashboard';
+import ProjectView from './containers/Project/ProjectView';
 import AppliedRoute from './components/AppliedRoute';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -17,6 +18,8 @@ export default function Routes(services) {
 
       <PrivateRoute path="/dashboard"
         exact component={Dashboard} services={services}/>
+      <PrivateRoute path="/projects/"
+        exact component={ProjectView} services={services}/>
       <Route component={NotFound}/>
     </Switch>
   );
