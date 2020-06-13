@@ -136,7 +136,7 @@ def get_project(current_user, project_id):
 def delete_project(current_user, project_id):
     db_project = Project.query.filter_by(user_id=current_user['id'], id=project_id).one_or_none()
     if db_project:
-        db_project.delete()
+        db_session.delete(db_project)
         db_session.commit()
         return jsonify(
             id=db_project.id,

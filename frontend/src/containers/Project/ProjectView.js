@@ -1,7 +1,7 @@
 import React from 'react';
 import {Component} from 'react';
 import queryString from 'query-string';
-import {Item} from 'semantic-ui-react';
+import {Button, Item} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {ProjectService} from '../../services/ProjectService';
 import {NotificationService} from '../../services/NotificationService';
@@ -46,6 +46,11 @@ class ProjectView extends Component {
 
     const searchUrl = queryString.parse(props.location.search);
     this.updateProjectInfo(searchUrl.id);
+
+    this.deleteProject = () => {
+      props.services.projectService.delete(this.state.id);
+      props.history.push('/dashboard');
+    };
   }
 
   // eslint-disable-next-line react/no-deprecated,require-jsdoc
@@ -68,6 +73,9 @@ class ProjectView extends Component {
             <Item.Description>
               API token {this.state.api_token}
             </Item.Description>
+            <Item.Extra>
+              <Button color='red' onClick={this.deleteProject}>Remove</Button>
+            </Item.Extra>
           </Item.Content>
         </Item>
       </Item.Group>

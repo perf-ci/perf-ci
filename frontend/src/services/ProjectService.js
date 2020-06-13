@@ -5,7 +5,8 @@ import {backendAPI} from './APIs';
  * @constructor
  */
 export function ProjectService() {
-  let _listener = () => {};
+  let _listener = () => {
+  };
 
   const service = {
     async list() {
@@ -32,6 +33,17 @@ export function ProjectService() {
     async get(id) {
       return await backendAPI.get(`/api/projects/${id}`)
           .then((resp) => {
+            return Promise.resolve(resp.data);
+          })
+          .catch((err) => {
+            return Promise.reject(err.response.data);
+          });
+    },
+
+    async delete(id) {
+      return await backendAPI.delete(`/api/projects/${id}`)
+          .then((resp) => {
+            _listener();
             return Promise.resolve(resp.data);
           })
           .catch((err) => {
