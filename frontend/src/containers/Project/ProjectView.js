@@ -1,7 +1,7 @@
 import React from 'react';
 import {Component} from 'react';
 import queryString from 'query-string';
-import {Button, Item} from 'semantic-ui-react';
+import {Button, Item, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {ProjectService} from '../../services/ProjectService';
 import {NotificationService} from '../../services/NotificationService';
@@ -32,6 +32,7 @@ class ProjectView extends Component {
       id: 0,
       name: '',
       api_token: '',
+      showDeleteConfirmation: false,
     };
 
     this.updateProjectInfo = (id) => this.props.services.projectService.get(id)
@@ -48,8 +49,13 @@ class ProjectView extends Component {
     this.updateProjectInfo(searchUrl.id);
 
     this.deleteProject = () => {
-      props.services.projectService.delete(this.state.id);
-      props.history.push('/dashboard');
+      props.services.projectService.delete(this.state.id).then((data)=> {
+        this.setState({showDeleteConfirmation: false});
+        props.services.notificationService.notifySuccess(data['message']);
+        props.history.push('/dashboard');
+      }).catch((data) => {
+        props.services.notificationService.notifyError(data['message']);
+      });
     };
   }
 
@@ -64,21 +70,48 @@ class ProjectView extends Component {
   // eslint-disable-next-line require-jsdoc
   render() {
     return (
-      <Item.Group>
-        <Item>
-          <Item.Content verticalAlign=''>
-            <Item.Header>
-              {this.state.name}
-            </Item.Header>
-            <Item.Description>
-              API token {this.state.api_token}
-            </Item.Description>
-            <Item.Extra>
-              <Button color='red' onClick={this.deleteProject}>Remove</Button>
-            </Item.Extra>
-          </Item.Content>
-        </Item>
-      </Item.Group>
+      <div>
+        <Item.Group>
+          <Item>
+            <Item.Content verticalAlign=''>
+              <Item.Header>
+                {this.state.name}
+              </Item.Header>
+              <Item.Description>
+                API token {this.state.api_token}
+              </Item.Description>
+              <Item.Extra>
+                <Button
+                  color='red'
+                  onClick={() => this.setState({showDeleteConfirmation: true})}
+                  content='Delete'/>
+              </Item.Extra>
+            </Item.Content>
+          </Item>
+        </Item.Group>
+
+        <Modal
+          open={this.state.showDeleteConfirmation}
+        >
+          <Modal.Header>Delete project {this.state.name}</Modal.Header>
+          <Modal.Content>
+            <p>Are you sure you want to delete the project</p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button
+              onClick={() => this.setState({showDeleteConfirmation: false})}
+              negative
+              content='No'/>
+            <Button
+              onClick={this.deleteProject}
+              positive
+              labelPosition='right'
+              icon='checkmark'
+              content='Yes'
+            />
+          </Modal.Actions>
+        </Modal>
+      </div>
     );
   }
 }
