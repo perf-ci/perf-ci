@@ -1,13 +1,12 @@
-from typing import List
 from functools import wraps
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, render_template, url_for, redirect, session, abort, jsonify, request
 from flask_cors import CORS
 from flask_sslify import SSLify
-from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.exc import IntegrityError
 
-from database import db_session, init_db
-from models import User, Project
+from database import init_db
+from perf_ci.models import User, Project
 
 app = Flask(__name__, static_url_path='/', static_folder='frontend/build', template_folder='frontend/build')
 app.config.from_pyfile('app.config')
@@ -19,8 +18,7 @@ oauth = OAuth(app)
 github = oauth.register('github',
                         client_kwargs={'scope': 'openid profile email user'}
                         )
-
-init_db()
+db_session = init_db('sqlite:////tmp/development.db')
 
 
 @app.route('/')
@@ -145,4 +143,22 @@ def delete_project(current_user, project_id):
     else:
         return jsonify(
             message=f'Failed to find a project with id {db_project.name}'
+        ), 400
+
+
+@app.route('/api/commit', methods=['POST'])
+def post_metric():
+    project_data = request.json
+    token_api = project_data['token_api']
+    db_project = Project.query.filter_by(pi_token=token_api)
+    if db_project:
+        try:
+            db_project.add_commit(project_data['commit'])
+        except KeyError as err:
+            return jsonify(
+                message=f'Failed to parse request {str(err)}'
+            ), 400
+    else:
+        return jsonify(
+            message=f'Failed to find a project with token API {token_api}'
         ), 400
